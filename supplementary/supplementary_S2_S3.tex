@@ -1,0 +1,142 @@
+% Supplementary Material Sections S2 and S3
+% Execution Realization Factor Specification and Robustness Analysis
+%
+% To be included in the supplementary material file or appended
+% to the main manuscript supplementary section.
+
+% =============================================================
+\section*{Supplementary Section S2: Execution Realization Factor $\xi$}
+% =============================================================
+
+\subsection*{S2.1 Definition}
+
+The execution realization factor $\xi_{i,t} \in (0, 1]$ is a
+per-row multiplicative factor representing delivery degradation
+from sources not captured by the violation dose model:
+equipment malfunction, human behavioural variability,
+communication failure, baseline estimation error, and
+unmodelled process constraints. It enters the dose--response
+formula as:
+\[
+    Y_i(\mathbf{V}) = \max\!\bigl(P_i^{\mathrm{nom}} \cdot r_i
+    \cdot \exp(s_i) \cdot f_{\mathrm{event}}(e_i) \cdot \xi_i
+    + \epsilon_i,\; 0\bigr).
+\]
+
+The factor $\xi_i$ is drawn independently for each
+user--task--event triple and is shared between the paired
+intervention arms ($V{=}0$ and $V{=}1$), preserving the
+exact closed-form treatment effect $\tau_i$.
+
+\subsection*{S2.2 Parameter Specification}
+
+\begin{table}[h!]
+\centering
+\caption{Execution realization factor $\xi$ parameter specification.}
+\label{tab:xi_params}
+\begin{tabular}{lllr}
+\toprule
+\textbf{Parameter} & \textbf{Symbol} & \textbf{Value} & \textbf{Source} \\
+\midrule
+Distribution family & --- & Beta & Bounded $[0,1]$, natural for ratios \\
+Shape parameter $a$ & $a$ & 5.92 & Solved from $(E[\xi], \mathrm{SD}[\xi])$ \\
+Shape parameter $b$ & $b$ & 2.91 & Solved from $(E[\xi], \mathrm{SD}[\xi])$ \\
+Mean & $E[\xi]$ & 0.67 & PJM Summer 2025 average DR delivery ratio \\
+Std.\ deviation & $\mathrm{SD}[\xi]$ & 0.15 & PJM inter-event variability \\
+Support & --- & $(0, 1]$ & Bounded by construction \\
+Random seed offset & --- & $+999$ & Separate RNG stream from violation/noise \\
+Persistence & --- & None (per-event) & Most conservative assumption \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{S2.3 Calibration Sources}
+
+The mean $E[\xi] = 0.67$ is calibrated to the PJM Summer 2025
+average demand-response performance ratio of 67\% (range
+53--72\% across events), as reported by the PJM Market
+Monitor~\citep{pjm2026marketmonitor}. The standard deviation
+$\mathrm{SD}[\xi] = 0.15$ is set to match the inter-event
+variability observed in the PJM data. Cross-market plausibility
+checks against MISO (67\% availability during Winter Storm
+Fern), NYISO (51--92\% by zone/hour), and Korean residential
+DR (83\% overestimation rate) confirm that the chosen
+parameters fall within the empirically observed range.
+
+\textit{Important distinction.} This calibration is
+\emph{external calibration}, not \emph{external validation}.
+The mean delivery ratio was used both to set $E[\xi]$ and to
+evaluate the resulting benchmark delivery ratio, creating a
+calibration closed loop. Independent validation against
+historical Sichuan event data is needed before deployment
+claims can be made.
+
+
+% =============================================================
+\section*{Supplementary Section S3: $\xi$ Robustness Analysis}
+% =============================================================
+
+\subsection*{S3.1 Design}
+
+To test whether the ranking--calibration gap is robust to the
+$\xi$ specification, we sweep four dimensions:
+\begin{enumerate}
+    \item \textit{Mean}: $E[\xi] \in \{0.58, 0.67, 0.75, 0.80\}$
+    \item \textit{Std}: $\mathrm{SD}[\xi] \in \{0.05, 0.10, 0.15, 0.20\}$
+    \item \textit{Distribution}: $\{\mathrm{Beta}, \mathrm{TruncNorm}, \mathrm{LogitNorm}\}$
+    \item \textit{Persistence}: $\{\mathrm{none}, \mathrm{half}, \mathrm{full}\}$
+\end{enumerate}
+Each configuration is evaluated over $N = 10$ independent
+seeds. The baseline configuration ($E[\xi]{=}0.67$,
+$\mathrm{SD}{=}0.15$, Beta, none) is additionally evaluated
+at $N = 30$ in the main text.
+
+\subsection*{S3.2 Results: TSR at $5\times$ Routine}
+
+\begin{table}[h!]
+\centering
+\caption{$\xi$ robustness: TSR at $5\times$ routine (mean$\pm$std
+across 10 seeds). The ranking--calibration gap (S4 $-$ S1)
+is present in every configuration.}
+\label{tab:xi_robust}
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Configuration} & $E[\xi]$ & SD & \textbf{S1 TSR\%} & \textbf{S4 TSR\%} & \textbf{Gap} \\
+\midrule
+\multicolumn{6}{l}{\textit{Mean sensitivity (Beta, SD=0.15, none)}} \\
+\midrule
+mean\_0.58 & 0.58 & 0.15 & $16.0 \pm 9.5$ & $73.3 \pm 9.4$ & 57.3 \\
+mean\_0.67 & 0.67 & 0.15 & $43.3 \pm 9.0$ & $87.3 \pm 6.6$ & 44.0 \\
+mean\_0.75 & 0.75 & 0.15 & $56.0 \pm 7.8$ & $86.0 \pm 6.6$ & 30.0 \\
+mean\_0.80 & 0.80 & 0.15 & $74.0 \pm 8.0$ & $91.3 \pm 7.1$ & 17.3 \\
+\midrule
+\multicolumn{6}{l}{\textit{Std sensitivity ($E[\xi]$=0.67, Beta, none)}} \\
+\midrule
+std\_0.05 & 0.67 & 0.05 & $35.3 \pm 7.7$ & $96.0 \pm 4.7$ & 60.7 \\
+std\_0.10 & 0.67 & 0.10 & $42.7 \pm 7.8$ & $94.0 \pm 4.9$ & 51.3 \\
+std\_0.15 & 0.67 & 0.15 & $43.3 \pm 9.0$ & $87.3 \pm 6.6$ & 44.0 \\
+std\_0.20 & 0.67 & 0.20 & $47.3 \pm 12.4$ & $80.7 \pm 10.2$ & 33.4 \\
+\midrule
+\multicolumn{6}{l}{\textit{Distribution sensitivity ($E[\xi]$=0.67, SD=0.15, none)}} \\
+\midrule
+Beta & 0.67 & 0.15 & $43.3 \pm 9.0$ & $87.3 \pm 6.6$ & 44.0 \\
+TruncNorm & 0.67 & 0.15 & $39.3 \pm 8.0$ & $90.7 \pm 6.4$ & 51.4 \\
+LogitNorm & 0.67 & 0.15 & $41.3 \pm 12.1$ & $86.0 \pm 7.3$ & 44.7 \\
+\midrule
+\multicolumn{6}{l}{\textit{Persistence sensitivity ($E[\xi]$=0.67, SD=0.15, Beta)}} \\
+\midrule
+None (per-event) & 0.67 & 0.15 & $43.3 \pm 9.0$ & $87.3 \pm 6.6$ & 44.0 \\
+Half (50\% user) & 0.67 & 0.15 & $37.3 \pm 6.4$ & $97.3 \pm 6.4$ & 60.0 \\
+Full (per-user) & 0.67 & 0.15 & $44.7 \pm 12.6$ & $90.0 \pm 11.0$ & 45.3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{S3.3 Conclusion}
+
+The ranking--calibration gap (S4 $-$ S1) is present in all 11
+tested configurations, with a minimum of 17.3 percentage
+points (at $E[\xi]{=}0.80$). The gap is not specific to the
+baseline parameterisation ($E[\xi]{=}0.67$, SD$=0.15$, Beta,
+none). Distribution form has minimal effect; user-level
+persistence slightly strengthens the calibration advantage.

@@ -1,0 +1,109 @@
+{
+  "schema_version": "v2.0",
+  "description": "Tunable parameters for Dataset v2 generation pipeline. All weights are documented in SCHEMA_V2.md.",
+  "seed_policy": {
+    "master_seed": 2048,
+    "city_codes": {"City-A": 1, "City-B": 2, "City-C": 3},
+    "seed_formula": "2048 + city_code * 1000000 + integer_user_id",
+    "intervention_pair_offset": 7,
+    "scenario_offset": 13,
+    "anchor_offset": 19
+  },
+  "violation_tensor": {
+    "classes": ["physical", "mutex", "comfort", "hierarchy", "contract"],
+    "base_rates": {
+      "physical": 0.054,
+      "mutex": 0.006,
+      "comfort": 0.180,
+      "hierarchy": 0.120,
+      "contract": 0.080
+    },
+    "severity_dist": {"family": "lognormal", "mu": -1.5, "sigma": 0.7},
+    "duration_dist": {"family": "exponential", "scale_hours": 1.5},
+    "scope_dist": {"family": "beta", "a": 2.0, "b": 5.0},
+    "dose_response_weights": {
+      "physical_on_delivery": -0.55,
+      "mutex_on_delivery": -0.18,
+      "comfort_on_delivery": -0.08,
+      "hierarchy_on_delivery": -0.04,
+      "contract_on_delivery": 0.0,
+      "physical_on_comfort": 0.05,
+      "comfort_on_comfort": 0.40,
+      "mutex_on_comfort": 0.08,
+      "hierarchy_on_comfort": 0.02,
+      "contract_on_comfort": 0.0,
+      "physical_on_rebound": 0.10,
+      "mutex_on_rebound": 0.25,
+      "comfort_on_rebound": 0.05,
+      "hierarchy_on_rebound": 0.10,
+      "contract_on_rebound": 0.0,
+      "physical_on_contract_penalty": 0.02,
+      "mutex_on_contract_penalty": 0.04,
+      "comfort_on_contract_penalty": 0.01,
+      "hierarchy_on_contract_penalty": 0.02,
+      "contract_on_contract_penalty": 0.50,
+      "physical_on_instability": 0.15,
+      "mutex_on_instability": 0.30,
+      "comfort_on_instability": 0.10,
+      "hierarchy_on_instability": 0.20,
+      "contract_on_instability": 0.05
+    }
+  },
+  "safety_cost": {
+    "alpha_weights": {
+      "comfort_loss": 0.40,
+      "rebound_risk": 0.25,
+      "contract_penalty": 0.20,
+      "instability": 0.15
+    },
+    "lambda": 1.5
+  },
+  "overlap_repair": {
+    "enabled": true,
+    "target_propensity_min": 0.05,
+    "target_propensity_max": 0.95,
+    "strata": {
+      "user_capacity_quantiles": 4,
+      "task_demand_ratio_bins": 4,
+      "event_intensity_bins": 3,
+      "city_clusters": "auto"
+    },
+    "max_augmentation_factor": 3
+  },
+  "scenarios": {
+    "ratios": {"easy": 0.30, "boundary": 0.50, "stress": 0.20},
+    "boundary_demand_over_capacity": {"low": 0.85, "high": 1.15},
+    "stress_capacity_clip": 0.6
+  },
+  "anchor_set": {
+    "n_anchors": 200,
+    "shared_features": ["X_cluster", "task_id", "demand_kw", "event_intensity_band"],
+    "varying_feature": "city_dynamics"
+  },
+  "label_fix": {
+    "n_bins": 3,
+    "labels": ["low", "medium", "high"]
+  },
+  "clustering": {
+    "primary_unit": "customer_id",
+    "n_clusters_per_city": "auto"
+  },
+  "split": {
+    "strategy": "chronological",
+    "train": ["2024-01-01", "2024-08-31"],
+    "validation": ["2024-09-01", "2024-10-31"],
+    "test": ["2024-11-01", "2024-12-31"],
+    "customer_cluster_no_leakage": true
+  },
+  "io": {
+    "chunk_size_rows": 200000,
+    "csv_encoding": "utf-8"
+  },
+  "execution_factor": {
+    "mean": 0.67,
+    "std": 0.15,
+    "dist": "beta",
+    "persistence": "none",
+    "calibration_source": "PJM Summer 2025 DR performance ratio (67%), cross-checked against MISO/NYISO/Korean empirical delivery rates"
+  }
+}
