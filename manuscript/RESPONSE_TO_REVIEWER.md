@@ -154,7 +154,7 @@ The gap is driven more by magnitude bias (capacity regret 11--13\%) than by pure
 | 35 | Bias statistics: denominator, regime, and fold structure stated. |
 | 36 | Data availability statements harmonised. |
 | 37 | CRediT statement completed with role-specific contributions for all six authors. |
-| 38 | Dedicated reproducibility repository created at `https://github.com/jerryao/ranking-is-not-deliverable-capacity`, including simulator, parameters, 30 seeds, fold assignments, calibration/replay/analysis scripts, frozen results, and figure/table reproduction scripts. Archived under release `[VERSION]` at commit `[COMMIT_HASH]`; Zenodo DOI upon publication. |
+| 38 | Dedicated reproducibility repository created at `https://github.com/jerryao/ranking-is-not-deliverable-capacity`, including simulator, parameters, 30 seeds, fold assignments, calibration/replay/analysis scripts, frozen results, and figure/table reproduction scripts. Archived under release `v1.0.0-review` at commit `67d9fb7`; Zenodo DOI upon publication. |
 | 39 | Supplementary S1–S3 and Figure S1 included with numerical test outputs. |
 | 40 | Duplicated phrase removed. $\xi$ terminology unified as "execution realization factor." American English spelling standardized. Notation table added. |
 
